@@ -12,11 +12,12 @@ exports.handleRequest = function (request, response) {
     if (request.url === "/"){
       // serve index.html
       // url = __dirname + '/public/index.html';
-      url = "/Users/student/Desktop/2015-06-web-historian/web/public/index.html";
+      url = __dirname + "/public/index.html";
     } else {
-      url = "/Users/student/Desktop/2015-06-web-historian/archives/sites" + request.url;
+      url = __dirname + "/../archives/sites" + request.url;
       // url = __dirname + '/../archives/sites' + request.url;
     }
+    console.log(" --- THIS IS REQUEST.URL --- : ", request.url);
     
     archive.isUrlArchived(url, function(exists){
       if(exists){
@@ -30,8 +31,19 @@ exports.handleRequest = function (request, response) {
       }
     });
   } else if (request.method === "POST"){
-    
-    response.end();
+    var dataString = '';
+    // request.on data, 
+    request.on('data', function(data){
+      dataString += data;
+    });
+    request.on('end', function(){
+      var website = JSON.parse(dataString).url;
+      archive.addUrlToList(website + '\n', function(){
+        response.writeHead(302);
+        console.log(" POSTED: ", website);
+        response.end();
+      });
+    });
   } else { // this else is here just to make sure a response.end is called
     response.end(archive.paths.list);
   }

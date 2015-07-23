@@ -72,5 +72,21 @@ exports.getFile = function(url, callback){
   });
 }
 
-exports.downloadUrls = function(){
+exports.downloadUrls = function(urlArray){
+  // for loop over array
+  for (var i = 0; i< urlArray.length; i++){
+    // fixture path set
+    var fixturePath = this.paths.archivedSites + '/' + urlArray[i];
+    // check if url is archived
+    this.isUrlArchived(fixturePath, function(exists){
+      // if !exist
+      if(!exists){
+        // add to file
+        console.log("--- TRYING TO WRITE TO --- : ", fixturePath);
+        fs.writeFile(fixturePath, "DATA WILL GO HERE", function(err){
+          if (err) throw err;
+        })
+      }
+    });
+  }
 };
