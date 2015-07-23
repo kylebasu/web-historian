@@ -25,17 +25,52 @@ exports.initialize = function(pathsObj){
 // The following function names are provided to you to suggest how you might
 // modularize your code. Keep it clean!
 
-exports.readListOfUrls = function(){
+exports.readListOfUrls = function(callback){
+  fs.readFile(this.paths.list, 'utf8', function(err, data){
+    if (err) throw err;
+    var urlArray=data.split("\n");
+    callback(urlArray);
+  });
 };
 
-exports.isUrlInList = function(){
+exports.isUrlInList = function(website, callback){
+  this.readListOfUrls(function(urls){
+    urls.indexOf(website) !== -1 ? callback(true) : callback(false);
+  });
 };
 
-exports.addUrlToList = function(){
+exports.addUrlToList = function(website, callback){
+  // console.log("ADDING URL TO LIST...");
+
+  var that = this;
+  this.isUrlInList(website, function(is){
+    // console.log("IS OR ISN'T IN LIST");
+    if (!is){
+      fs.appendFile(that.paths.list, website, function(err){
+        if (err) throw err;
+        // console.log("WROTE DATA TO END OF FILE: ", website);
+        callback();
+      })
+    } else {
+      // console.log("DID NOT WRITE DATA - WEBSITE IN FILE");
+      callback();
+    }
+
+  });
 };
 
-exports.isUrlArchived = function(){
+exports.isUrlArchived = function(url, callback){
+  fs.exists(url, function(exists){
+    callback(exists);
+  })
 };
+
+exports.getFile = function(url, callback){
+  fs.readFile(url, function(err, data){
+    if (err) throw err;
+    callback(data);
+  });
+}
 
 exports.downloadUrls = function(){
 };

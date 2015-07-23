@@ -13,6 +13,7 @@ var request = supertest.agent(server);
 
 describe("server", function() {
   describe("GET /", function () {
+    // DONE
     it("should return the content of index.html", function (done) {
       // just assume that if it contains an <input> tag its index.html
       request
@@ -23,6 +24,7 @@ describe("server", function() {
 
   describe("archived websites", function () {
     describe("GET", function () {
+      // DONE
       it("should return the content of a website from the archive", function (done) {
         var fixtureName = "www.google.com";
         var fixturePath = archive.paths.archivedSites + "/" + fixtureName;
@@ -42,7 +44,7 @@ describe("server", function() {
             done(err);
           });
       });
-
+      // DONE
       it("Should 404 when asked for a nonexistent file", function(done) {
         request.get('/arglebargle').expect(404, done);
       });
@@ -72,18 +74,19 @@ describe("server", function() {
 });
 
 describe("archive helpers", function(){
+  // FUCKING DONE
   describe("#readListOfUrls", function () {
     it("should read urls from sites.txt", function (done){
       var urlArray = ["example1.com", "example2.com"];
       fs.writeFileSync(archive.paths.list, urlArray.join("\n"));
-
       archive.readListOfUrls(function(urls){
+        console.log("--- URLS IN TEST --- : ", urls);
         expect(urls).to.deep.equal(urlArray);
         done();
       });
     });
   });
-
+  // ALSO FUCKING DONE
   describe("#isUrlInList", function () {
     it("should check if a url is in the list", function (done) {
       var urlArray = ["example1.com", "example2.com"];
@@ -103,7 +106,7 @@ describe("archive helpers", function(){
       });
     });
   });
-
+  // WORKING ON THIS
   describe("#addUrlToList", function () {
     it("should add a url to the list", function (done) {
       var urlArray = ["example1.com", "example2.com\n"];
@@ -111,6 +114,7 @@ describe("archive helpers", function(){
 
       archive.addUrlToList("someurl.com", function () {
         archive.isUrlInList("someurl.com", function (is) {
+          console.log("TESTING FOR SOMEURL")
           expect(is);
           done();
         });
