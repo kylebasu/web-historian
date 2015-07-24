@@ -1,6 +1,7 @@
 var fs = require('fs');
 var path = require('path');
 var _ = require('underscore');
+var request = require('request');
 
 /*
  * You will need to reuse the same paths many times over in the course of this sprint.
@@ -55,7 +56,6 @@ exports.addUrlToList = function(website, callback){
       // console.log("DID NOT WRITE DATA - WEBSITE IN FILE");
       callback();
     }
-
   });
 };
 
@@ -73,20 +73,33 @@ exports.getFile = function(url, callback){
 }
 
 exports.downloadUrls = function(urlArray){
-  // for loop over array
-  for (var i = 0; i< urlArray.length; i++){
-    // fixture path set
-    var fixturePath = this.paths.archivedSites + '/' + urlArray[i];
+  urlArray.forEach(function(listItem){
+    var fixturePath = exports.paths.archivedSites + '/' + listItem;
     // check if url is archived
-    this.isUrlArchived(fixturePath, function(exists){
+    exports.isUrlArchived(fixturePath, function(exists){
       // if !exist
+      console.log("THIS SHOULD LOG 3 TIMES - CURRENT FIXTUREPATH: ", fixturePath);
       if(!exists){
-        // add to file
-        console.log("--- TRYING TO WRITE TO --- : ", fixturePath);
-        fs.writeFile(fixturePath, "DATA WILL GO HERE", function(err){
-          if (err) throw err;
-        })
+        var website = fixturePath.split('/sites/')[1];
+        // might need to add http:// to urlArray
+        request('http://' + website).pipe(fs.createWriteStream(fixturePath));
       }
     });
-  }
-};
+  });
+}
+    // fixture path set
+        // request('https://' + website).pipe(fs.createWriteStream(fixturePath));
+        // http.get(website, function(err, response){
+        //   if (err) {
+        //     console.log("ERROR");
+        //     throw err;
+        //   }
+        //   var websiteData = response.buffer;
+        //   console.log(websiteData);
+        //   var fixturePath = __dirname + "/../archives/sites/" + website;
+          
+        //   console.log("--- TRYING TO WRITE TO --- : ", fixturePath);
+        //   fs.writeFile(fixturePath, websiteData, function(err){
+        //     if (err) throw err;
+        //   });        
+        // })
